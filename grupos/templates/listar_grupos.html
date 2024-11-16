@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row d-flex justify-content-center">
+        <div class="col-lg-10">
+            <h1 class="text-center mb-4">Lista de Grupos</h1>
+
+            <!-- Tabla estilizada con Bootstrap -->
+            <table class="table table-striped table-bordered">
+                <thead class="thead-dark">
+                    <tr>
+                        <th scope="col">Trayecto</th>
+                        <th scope="col">Docente Metodológico</th>
+                        <th scope="col">Docente Académico</th>
+                        <th scope="col">Estudiantes</th>
+                        <th scope="col">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for grupo in grupos %}
+                    <tr>
+                        <td>{{ grupo.trayecto_cursante }}</td>
+                        <td>{{ grupo.docente_metodologico }}</td>
+                        <td>{{ grupo.docente_academico }}</td>
+                        <td>
+                            <ul class="list-unstyled">
+                                {% for estudiante in grupo.estudiantes_lista %}
+                                <li>{{ estudiante.nombre }} {{ estudiante.apellido }} - {{ estudiante.cedula }}</li>
+                                {% endfor %}
+                            </ul>
+                        </td>
+                        <td>
+                            <div class="d-flex justify-content-between">
+                                <!-- Botón de editar grupo -->
+                                <a class="btn btn-primary btn-sm mx-1" href="{% url 'editar_grupo' grupo.id %}">Editar</a>
+                                
+                                {% if roles == "administrativo" %}
+                                <!-- Botón de eliminar grupo con confirmación -->
+                                <form action="{% url 'eliminar_grupo' grupo.id %}" method="post" class="d-inline">
+                                    {% csrf_token %}
+                                    <button class="btn btn-danger btn-sm mx-1" type="submit" onclick="return confirm('¿Estás seguro que deseas eliminar este grupo?');">Eliminar</button>
+                                </form>
+                                {% endif %}
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            <!-- Enlaces adicionales -->
+            <div class="d-flex justify-content-between mt-3">
+                <a class="btn btn-secondary" href="{% url 'registrar_grupo' %}">Registro de grupos</a>
+                <a class="btn btn-info" href="{% url 'buscar_estudiante_por_cedula' %}">Buscar estudiante por cédula</a>
+                <a class="btn btn-dark" href="{% url 'generar_pdf_grupos' %}">Generar PDF de los grupos</a>
+            </div>
+
+            <div class="row d-flex justify-content-center mt-3">
+                <a class="btn btn-primary btn-formulario m-2 col-sm-12 col-md-5 col-lg-3" href="{% url 'staff_dashboard' %}">Volver</a>
+            </div>
+
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+<div class="container mt-5">
+    <h1 class="text-center">Dashboard de Estudiantes</h1>
+    <div class="card mt-4">
+        <div class="card-body">
+            {% if estudiante %}
+            <table class="table table-striped table-bordered">
+                <thead class="thead-dark">
+                    <tr>
+                        <th>Nombre</th>
+                        <th>Apellido</th>
+                        <th>Cédula</th>
+                        <th>Email</th>
+                        <th>Sección</th>
+                        <th>Fecha de Nacimiento</th>
+                        <th>Teléfono</th>
+                        <th>Dirección</th>
+                        <th>Sexo</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>{{ estudiante.nombre }}</td>
+                        <td>{{ estudiante.apellido }}</td>
+                        <td>{{ estudiante.cedula }}</td>
+                        <td>{{ estudiante.email }}</td>
+                        <td>{{ estudiante.seccion }}</td>
+                        <td>{{ estudiante.fecha_nacimiento }}</td>
+                        <td>{{ estudiante.numero_telefono }}</td>
+                        <td>{{ estudiante.direccion }}</td>
+                        <td>{{ estudiante.sexo }}</td>
+                        <td>{{ estudiante.status|yesno:"Activo,Inactivo" }}</td>
+                    </tr>
+                </tbody>
+            </table>
+            <br>
+            <a href="{% url 'home_pp' %}">Subir Proyecto</a>
+            {% else %}
+            <p class="text-center">No hay información del estudiante disponible.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

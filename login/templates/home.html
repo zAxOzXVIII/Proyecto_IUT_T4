@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+
+{% block title %}Home{% endblock %}
+{% load static %}
+{% block content %}
+<style>
+    /* Fijar el tamaño de las tarjetas */
+.fixed-size-image {
+    width: 300px;       /* Ancho fijo */
+    height: 200px;      /* Alto fijo */
+    object-fit: cover;  /* Ajusta la imagen para llenar el espacio sin deformarse */
+}
+
+.fixed-size-card {
+    width: 300px;   /* El contenedor debe coincidir con el ancho */
+    height: 200px;  /* El contenedor debe coincidir con el alto */
+}
+
+/* Efecto hover para las tarjetas */
+.grow-hover {
+    transition: transform 0.3s ease-in-out;
+}
+
+.grow-hover:hover {
+    transform: scale(1.05); /* Agranda la tarjeta un 5% */
+}
+
+.grow-hover:hover img {
+    transform: scale(1.1); /* Agranda la imagen un 10% */
+}
+</style>
+<div class="container mt-5">
+    <h1 class="text-center mb-5">Welcome</h1>
+    <div class="row text-center">
+        <!-- Botón Login Staff -->
+<div class="col-md-4">
+    <div class="card-body mb-2">
+        <h5 class="card-title">Login Staff</h5>
+    </div>
+    <div class="card shadow-sm grow-hover fixed-size-card">
+        <a style="text-decoration: none;" href="{% url 'login_staff' %}">
+            <img src="{% static 'images/log_stff.jpg' %}" class="card-img-top img-fluid fixed-size-image" alt="Login Staff">
+            
+        </a>
+    </div>
+</div>
+<!-- Botón Register Estudiante -->
+<div class="col-md-4">
+    <div class="card-body">
+        <h5 class="card-title mb-2">Registrar Estudiante</h5>
+    </div>
+    <div class="card shadow-sm grow-hover fixed-size-card">
+        <a style="text-decoration: none;" href="{% url 'register' %}">
+            <img src="{% static 'images/reg_est.jpg' %}" class="card-img-top img-fluid fixed-size-image" alt="Register Estudiante">
+        </a>
+    </div>
+</div>
+
+<!-- Botón Login Estudiante -->
+<div class="col-md-4">
+    <div class="card-body mb-2">
+        <h5 class="card-title">Login Estudiante</h5>
+    </div>
+    <div class="card shadow-sm grow-hover fixed-size-card">
+        <a style="text-decoration: none;" href="{% url 'login' %}">
+            <img src="{% static 'images/log_est.jpg' %}" class="card-img-top img-fluid fixed-size-image" alt="Login Estudiante">
+        </a>
+    </div>
+</div>
+    </div>
+</div>
+{% endblock %}

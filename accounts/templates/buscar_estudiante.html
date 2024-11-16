@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row mt-4 d-flex justify-content-center">
+        <div class="col-lg-6 col-sm-6 col-md-6 header-formulario p-4 d-flex justify-content-center">
+            <h3 class="text-center mt-2 mx-4 p-2 bg-titulo-formulario">Buscar Estudiante por Cédula</h3>
+        </div>
+    </div>
+
+    <div class="row mb-3 d-flex justify-content-center">
+        <div class="col-lg-6 col-sm-6 col-md-6 body-formulario">
+            <div class="row d-flex justify-content-center my-3">
+                <div class="col">
+                    <form method="POST">
+                        {% csrf_token %}
+                        <div class="row mx-4 my-3">
+                            <div class="col-lg-4">
+                                <label for="cedula" class="form-label">Ingrese la cédula:</label>
+                            </div>
+                            <div class="col-lg-8">
+                                {{ form.cedula }}
+                            </div>
+                        </div>
+
+                        <div class="row d-flex justify-content-center">
+                            <div class="col-lg-3">
+                                <button type="submit" class="btn btn-primary btn-formulario col-sm-12 col-md-12 col-lg-12">Buscar</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            {% if estudiante %}
+            <div class="row d-flex justify-content-center my-3">
+                <div class="col bg-white p-4 centro-formulario">
+                    <h2 class="text-center">Estudiante Encontrado</h2>
+                    <div class="row my-3">
+                        <div class="col-lg-6 my-3">
+                            <p><strong>Nombre:</strong> {{ estudiante.nombre }} {{ estudiante.apellido }}</p>
+                        </div>
+                        <div class="col-lg-6 my-3">
+                            <p><strong>Cédula:</strong> {{ estudiante.cedula }}</p>
+                        </div>
+                        <div class="col-lg-6 my-3">
+                            <p><strong>Email:</strong> {{ estudiante.email }}</p>
+                        </div>
+                        <div class="col-lg-6 my-3">
+                            <p><strong>Teléfono:</strong> {{ estudiante.numero_telefono }}</p>
+                        </div>
+                        <div class="col-lg-12 my-3">
+                            <p><strong>Dirección:</strong> {{ estudiante.direccion }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            {% if messages %}
+            <ul>
+                {% for message in messages %}
+                <div class="row d-flex justify-content-center my-3">
+                    <div class="alert alert-danger col-lg-6 text-center">
+                        <strong>{{message}}</strong>
+                    </div>
+                </div>
+                {% endfor %}
+            </ul>
+{% endif %}
+        </div>
+    </div>
+</div>
+
+
+
+{% endblock %}
