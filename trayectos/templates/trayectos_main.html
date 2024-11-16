@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<main class="container mt-5">
+    <!-- Título del formulario centrado -->
+    <div class="row d-flex justify-content-center">
+        <div class="col-lg-6 col-md-8 col-sm-10 header-formulario p-4 d-flex justify-content-center align-items-center">
+            <h3 class="text-center bg-titulo-formulario p-3 w-100 rounded">
+                Trayectos
+            </h3>
+        </div>
+    </div>
+
+    <!-- Opciones de Trayectos -->
+    <div class="row mt-4 d-flex justify-content-center">
+        <div class="col-md-6 d-grid gap-3">
+            <!-- Botón Agregar Estudiantes -->
+            <a href="{% url 'asignar_estudiantes' %}" class="btn btn-primary btn-lg btn-block">
+                Agregar Estudiantes
+            </a>
+            <!-- Botón Ver Trayectos -->
+            <a href="{% url 'trayectos_view' %}" class="btn btn-secondary btn-lg btn-block">
+                Ver Trayectos
+            </a>
+        </div>
+    </div>
+
+    <!-- Espaciado adicional -->
+    <div class="mt-4"></div>
+
+    <!-- Botón Volver centrado -->
+    <div class="row d-flex justify-content-center">
+        <div class="col-md-4 text-center">
+            <a href="{% url 'staff_dashboard' %}" class="btn btn-outline-dark btn-lg">
+                Volver
+            </a>
+        </div>
+    </div>
+</main>
+{% endblock %}
