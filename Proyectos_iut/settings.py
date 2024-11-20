@@ -42,7 +42,8 @@ INSTALLED_APPS = [
     'masters',
     'trayectos',
     'grupos',
-    'proyectos'
+    'proyectos',
+    'etapas'
 ]
 
 MIDDLEWARE = [
@@ -152,3 +153,6 @@ AUTH_USER_MODEL = 'accounts.CustomUser'
 #     'login.auth_backend.StaffBackend',  # Backend para Staff
 #     'django.contrib.auth.backends.ModelBackend',  # Backend para CustomUser
 # ]
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'

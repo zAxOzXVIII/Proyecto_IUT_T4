@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+{% block title %}Listar Archivos{% endblock %}
+{% block content %}
+<div class="container mt-5">
+    <h1>Archivos Subidos</h1>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Proyecto</th>
+                <th>Capítulos</th>
+                <th>Grupo</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for archivo in archivos %}
+            <tr>
+                <td>{{ archivo.id }}</td>
+                <td><a href="{{ archivo.Proyecto.url }}">Descargar Proyecto</a></td>
+                <td><a href="{{ archivo.Capitulos.url }}">Descargar Capítulos</a></td>
+                <td>{{ archivo.Grupo_est_id }}</td>
+                <td>
+                    <a href="{% url 'editar_archivo' archivo.id %}" class="btn btn-warning btn-sm">Editar</a>
+                    <form action="{% url 'eliminar_archivo' archivo.id %}" method="POST" style="display:inline-block;">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger btn-sm">Eliminar</button>
+                    </form>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="5" class="text-center">No hay archivos subidos.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
