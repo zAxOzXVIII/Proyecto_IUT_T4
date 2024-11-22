@@ -11,6 +11,10 @@ from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
 import os
 from django.conf import settings
+from trayectos.models import Trayectos_all
+from grupos.models import Grupos
+from reportlab.lib.utils import ImageReader
+from reportlab.lib import colors
 
 @api_view(['GET', 'POST', 'PUT', 'DELETE'])
 def estudiantesApi(request, id=0):
@@ -78,12 +82,27 @@ def activar_estudiante(request, id):
 def eliminar_estudiante(request, id):
     if request.method == "GET":
         estudiante = get_object_or_404(Estudiante, pk=id)
-        #print(f"{estudiante.cedula}")
         return render(request, 'eliminar_estudiante.html', {"estudiante": estudiante})
     elif request.method == "POST":
+        # Obtener al estudiante
         estudiante = get_object_or_404(Estudiante, pk=id)
+
+        # Cambiar el estado a inactivo
         estudiante.status = False
         estudiante.save()
+
+        # Eliminar el ID del estudiante de todos los grupos
+        grupos = Grupos.objects.filter(estudiantes__icontains=str(estudiante.id))
+        for grupo in grupos:
+            estudiantes_ids = grupo.estudiantes.split(",")  # Convertir a lista
+            estudiantes_ids = [e.strip() for e in estudiantes_ids if e.strip() != str(estudiante.id)]  # Remover el ID
+            grupo.estudiantes = ", ".join(estudiantes_ids)  # Volver a unir la lista
+            grupo.save()
+
+        # Eliminar el registro de trayectos del estudiante
+        Trayectos_all.objects.filter(ref_cedula_id=estudiante.id).delete()
+
+        # Mensaje de éxito y redirección
         messages.success(request, 'Estudiante eliminado exitosamente.')
         return redirect('estudiantes_main')
 
@@ -103,50 +122,67 @@ def generar_pdf_estudiantes(request):
     width, height = letter
     pdf.setTitle("Listado de Estudiantes")
 
-    # Ruta de la imagen (asegúrate de que la ruta sea correcta)
+    # Ruta de la imagen del encabezado
     logo_path = os.path.join(settings.BASE_DIR, 'static', 'images', 'logo_iut_largo.jpg')
     logo_path = logo_path.replace('\\', '/')
 
-    # Agregar la imagen en el encabezado (ajusta el tamaño y posición según sea necesario)
-    pdf.drawImage(logo_path, 40, height - 100, width=200, height=60)  # Ajusta la posición y el tamaño de la imagen
+    # Añadir el logotipo en el encabezado
+    pdf.drawImage(ImageReader(logo_path), 40, height - 100, width=550, height=60)
 
-    # Margen superior (debajo de la imagen)
+    # Margen superior (después del logotipo)
     y = height - 150
 
-    # Escribir el título debajo de la imagen
+    # Estilizar el título principal
     pdf.setFont("Helvetica-Bold", 16)
-    pdf.drawString(100, y, "Lista de Estudiantes")
+    pdf.setFillColor(colors.darkblue)
+    pdf.drawString(220, y, "Listado de Estudiantes")
     y -= 30
 
-    # Definir estilo para el contenido
+    # Configuración de estilo general
     pdf.setFont("Helvetica", 12)
+    pdf.setFillColor(colors.black)
 
-    # Iterar sobre los estudiantes y escribir la información en el PDF
+    # Dibujar una línea divisoria después del encabezado
+    pdf.setStrokeColor(colors.grey)
+    pdf.setLineWidth(1)
+    pdf.line(40, y, width - 40, y)
+    y -= 20
+
+    # Iterar sobre los estudiantes y generar contenido
     estudiantes = Estudiante.objects.all()
     for estudiante in estudiantes:
-        if y < 100:  # Si el espacio no es suficiente, crear una nueva página
+        # Verificar si hay espacio suficiente para contenido; si no, crear nueva página
+        if y < 100:
             pdf.showPage()
+            pdf.drawImage(ImageReader(logo_path), 40, height - 100, width=550, height=60)
+            y = height - 150
+            pdf.setFont("Helvetica-Bold", 16)
+            pdf.setFillColor(colors.darkblue)
+            pdf.drawString(220, y, "Listado de Estudiantes")
+            y -= 30
             pdf.setFont("Helvetica", 12)
-            y = height - 50
+            pdf.setFillColor(colors.black)
 
-        pdf.drawString(100, y, f"Nombre: {estudiante.nombre} {estudiante.apellido}")
+        # Información del estudiante con separación y formato
+        pdf.setFont("Helvetica-Bold", 12)
+        pdf.drawString(100, y, f"Nombre Completo: {estudiante.nombre} {estudiante.apellido}")
         y -= 20
-        pdf.drawString(100, y, f"Cédula: {estudiante.cedula}")
+
+        pdf.setFont("Helvetica", 11)
+        pdf.drawString(100, y, f"Cédula: {estudiante.cedula} | Email: {estudiante.email}")
+        y -= 15
+        pdf.drawString(100, y, f"Sección: {estudiante.seccion} | Fecha de Nacimiento: {estudiante.fecha_nacimiento}")
+        y -= 15
+        pdf.drawString(100, y, f"Teléfono: {estudiante.numero_telefono} | Dirección: {estudiante.direccion}")
+        y -= 15
+        pdf.drawString(100, y, f"Sexo: {estudiante.sexo} | Status: {'Activo' if estudiante.status else 'Inactivo'}")
         y -= 20
-        pdf.drawString(100, y, f"Email: {estudiante.email}")
+
+        # Dibujar línea divisoria entre estudiantes
+        pdf.setStrokeColor(colors.lightgrey)
+        pdf.setLineWidth(0.5)
+        pdf.line(40, y, width - 40, y)
         y -= 20
-        pdf.drawString(100, y, f"Sección: {estudiante.seccion}")
-        y -= 20
-        pdf.drawString(100, y, f"Fecha de Nacimiento: {estudiante.fecha_nacimiento}")
-        y -= 20
-        pdf.drawString(100, y, f"Teléfono: {estudiante.numero_telefono}")
-        y -= 20
-        pdf.drawString(100, y, f"Dirección: {estudiante.direccion}")
-        y -= 20
-        pdf.drawString(100, y, f"Sexo: {estudiante.sexo}")
-        y -= 20
-        pdf.drawString(100, y, f"Status: {'Activo' if estudiante.status else 'Inactivo'}")
-        y -= 40  # Espacio adicional entre estudiantes
 
     # Finalizar el PDF
     pdf.showPage()
@@ -174,3 +210,4 @@ def buscar_estudiante(request):
 def dashboard(request):
     estudiantes = Estudiante.objects.all()  # Obtener todos los estudiantes
     return render(request, 'dashboard.html', {'estudiantes': estudiantes})
+

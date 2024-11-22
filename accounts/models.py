@@ -59,6 +59,7 @@ class Estudiante(models.Model):
     direccion = models.CharField(max_length=255)
     sexo = models.CharField(max_length=10)
     status = models.BooleanField(default=True)
+    ultimo_año_cursado = models.CharField(max_length=10, null=True, blank=True)
 
     def __str__(self):
         return f"{self.nombre} {self.apellido} - {self.cedula}"

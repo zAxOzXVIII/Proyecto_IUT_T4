@@ -9,11 +9,15 @@ from django.contrib import messages
 from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import letter
 from django.http import HttpResponse
+from django.conf import settings
+import os
 
 def registrar_grupo(request):
-    profesores_metodologicos = Profesores.objects.filter(role='metodologico')
-    profesores_academicos = Profesores.objects.filter(role='academico')
+    # Filtrar profesores por roles, incluyendo 'completo' en ambas listas
+    profesores_metodologicos = Profesores.objects.filter(role__in=['metodologico', 'completo'])
+    profesores_academicos = Profesores.objects.filter(role__in=['academico', 'completo'])
 
+    # Construir las opciones para el formulario
     metodologicos_opciones = [(profesor.id, f"{profesor.nombre} {profesor.apellido}") for profesor in profesores_metodologicos]
     academicos_opciones = [(profesor.id, f"{profesor.nombre} {profesor.apellido}") for profesor in profesores_academicos]
 
@@ -174,57 +178,57 @@ def generar_pdf_grupos(request):
     pdf = canvas.Canvas(response, pagesize=letter)
     width, height = letter
 
+    # Ruta de la imagen del membrete
+    logo_path = os.path.join(settings.BASE_DIR, 'static', 'images', 'logo_iut_largo.jpg')
+
+    # Dibujar el membrete en la parte superior
+    pdf.drawImage(logo_path, 50, height - 100, width=500, height=80, preserveAspectRatio=True)
+
+    # Agregar márgenes y estilos
+    margin_x = 50
+    margin_y = 50
+    y_position = height - 150  # Ajustar para evitar superposición con el membrete
+
     # Título del documento
     pdf.setFont("Helvetica-Bold", 16)
-    pdf.drawString(100, height - 50, "Reporte de Grupos")
+    pdf.drawCentredString(width / 2, y_position, "Reporte de Grupos")
+    y_position -= 30  # Espacio después del título
 
     # Obtener todos los datos de los grupos
     grupos = Grupos.objects.all()
-    for grupo in grupos:
-        # Obtener los docentes a partir de sus IDs
-        docente_metodologico = Profesores.objects.get(id=grupo.docente_metodologico)
-        docente_academico = Profesores.objects.get(id=grupo.docente_academico)
-
-        # Asegurarse de que el campo de estudiantes sea válido
-        estudiantes_ids = grupo.estudiantes.split(',') if grupo.estudiantes else []
-
-        try:
-            # Convertir a enteros y filtrar los estudiantes
-            estudiantes_ids = [int(est_id.strip()) for est_id in estudiantes_ids]
-            estudiantes = Estudiante.objects.filter(id__in=estudiantes_ids)
-        except ValueError:
-            # Si hay algún valor que no se pueda convertir a entero, manejamos el error
-            estudiantes = []
-
-    y_position = height - 80  # Ajuste de la posición inicial del texto
 
     # Iterar sobre los grupos y agregar los detalles al PDF
     for grupo in grupos:
         pdf.setFont("Helvetica", 12)
-        
+
         # Información del trayecto y profesores
-        pdf.drawString(100, y_position, f"Trayecto: {grupo.trayecto_cursante}")
+        docente_metodologico = Profesores.objects.get(id=grupo.docente_metodologico)
+        docente_academico = Profesores.objects.get(id=grupo.docente_academico)
+
+        pdf.drawString(margin_x, y_position, f"Trayecto: {grupo.trayecto_cursante}")
         y_position -= 15
-        pdf.drawString(100, y_position, f"Docente Metodológico: {docente_metodologico.nombre} {docente_metodologico.apellido}")
+        pdf.drawString(margin_x, y_position, f"Docente Metodológico: {docente_metodologico.nombre} {docente_metodologico.apellido}")
         y_position -= 15
-        pdf.drawString(100, y_position, f"Docente Académico: {docente_academico.nombre} {docente_academico.apellido}")
+        pdf.drawString(margin_x, y_position, f"Docente Académico: {docente_academico.nombre} {docente_academico.apellido}")
         y_position -= 15
 
         # Listar estudiantes
-        estudiantes = grupo.get_estudiantes()
-        pdf.drawString(100, y_position, "Estudiantes:")
+        pdf.drawString(margin_x, y_position, "Estudiantes:")
         y_position -= 15
+        estudiantes = grupo.get_estudiantes()
 
         for estudiante_id in estudiantes:
-            pdf.drawString(120, y_position, f"- {estudiante_id}")  # Ajusta según como quieras mostrar los estudiantes
+            pdf.drawString(margin_x + 20, y_position, f"- {estudiante_id}")  # Indentar lista
             y_position -= 15
 
         y_position -= 20  # Espacio entre grupos
 
         # Saltar a la siguiente página si el espacio se acaba
-        if y_position < 50:
+        if y_position < margin_y:
             pdf.showPage()
-            y_position = height - 50
+            # Dibujar el membrete en la nueva página
+            pdf.drawImage(logo_path, 50, height - 100, width=500, height=80, preserveAspectRatio=True)
+            y_position = height - 150
 
     # Finalizar el PDF
     pdf.save()

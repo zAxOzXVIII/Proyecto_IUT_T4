@@ -26,4 +26,9 @@
         <a href="{% url 'profesores' %}" class="btn btn-secondary">Regresar</a>
     </div>
 </div>
+{% if error %}
+    <div class="alert alert-danger text-center" role="alert">
+        {{ error }}
+    </div>
+    {% endif %}
 {% endblock %}
