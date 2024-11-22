@@ -7,6 +7,10 @@ from .forms import ProfesoresForm
 from django.http import HttpResponse
 from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
+from reportlab.lib import colors
+from reportlab.lib.utils import ImageReader
+from django.conf import settings
+import os
 
 # Create your views here.
 
@@ -23,15 +27,17 @@ def crear_profe(request):
         try:
             form = ProfesoresForm(request.POST)
             if form.is_valid():
-                form.save()
-                print("Profesor guardado")
+                profesor = form.save(commit=False)  # No guarda en la base aún
+                profesor.save()  # Guarda el registro en la base de datos
                 return redirect("profesores")
             else:
-                # Si el formulario no es válido, renderiza la misma página con el formulario y los errores
+                # Renderiza la misma página si el formulario no es válido
                 return render(request, 'crear_profe.html', {"form": form, "error": "Formulario inválido"})
         except Exception as e:
-            # Capturar el error y mostrar mensaje en el template
+            # Captura cualquier error y lo muestra en el template
             return render(request, 'crear_profe.html', {"form": ProfesoresForm(), "error": str(e)})
+
+
 
 def editar_profe(request, id):
     if request.method == "GET":
@@ -85,35 +91,66 @@ def generar_pdf_profesores(request):
     width, height = letter
     pdf.setTitle("Listado de Profesores")
 
-    # Margen superior
-    y = height - 50
+    # Ruta de la imagen del encabezado
+    logo_path = os.path.join(settings.BASE_DIR, 'static', 'images', 'logo_iut_largo.jpg')
+    logo_path = logo_path.replace('\\', '/')
 
-    # Escribir encabezado
+    # Añadir el logotipo en el encabezado
+    pdf.drawImage(ImageReader(logo_path), 40, height - 100, width=550, height=60)
+
+    # Margen superior después del logotipo
+    y = height - 150
+
+    # Estilizar el título principal
     pdf.setFont("Helvetica-Bold", 16)
-    pdf.drawString(100, y, "Lista de Profesores")
+    pdf.setFillColor(colors.darkblue)
+    pdf.drawString(220, y, "Listado de Profesores")
     y -= 30
 
-    # Definir estilo para el contenido
-    pdf.setFont("Helvetica", 12)
+    # Dibujar línea divisoria después del título
+    pdf.setStrokeColor(colors.grey)
+    pdf.setLineWidth(1)
+    pdf.line(40, y, width - 40, y)
+    y -= 20
 
-    # Iterar sobre los profesores y escribir la información en el PDF
+    # Configuración de estilo general
+    pdf.setFont("Helvetica", 12)
+    pdf.setFillColor(colors.black)
+
+    # Iterar sobre los profesores y generar contenido
     profesores = Profesores.objects.all()
     for profesor in profesores:
-        if y < 100:  # Si el espacio no es suficiente, crear una nueva página
+        # Verificar si hay espacio suficiente; si no, crear nueva página
+        if y < 100:
             pdf.showPage()
+            pdf.drawImage(ImageReader(logo_path), 40, height - 100, width=550, height=60)
+            y = height - 150
+            pdf.setFont("Helvetica-Bold", 16)
+            pdf.setFillColor(colors.darkblue)
+            pdf.drawString(220, y, "Listado de Profesores")
+            y -= 30
             pdf.setFont("Helvetica", 12)
-            y = height - 50
+            pdf.setFillColor(colors.black)
+            pdf.setStrokeColor(colors.grey)
+            pdf.line(40, y, width - 40, y)
+            y -= 20
 
-        pdf.drawString(100, y, f"Nombre: {profesor.nombre} {profesor.apellido}")
+        # Información del profesor con separación y formato
+        pdf.setFont("Helvetica-Bold", 12)
+        pdf.drawString(100, y, f"Nombre Completo: {profesor.nombre} {profesor.apellido}")
         y -= 20
-        pdf.drawString(100, y, f"Cédula: {profesor.cedula}")
+
+        pdf.setFont("Helvetica", 11)
+        pdf.drawString(100, y, f"Cédula: {profesor.cedula} | Correo: {profesor.correo}")
+        y -= 15
+        pdf.drawString(100, y, f"Rol: {profesor.role} | Status: {'Activo' if profesor.status else 'Inactivo'}")
         y -= 20
-        pdf.drawString(100, y, f"Correo: {profesor.correo}")
+
+        # Dibujar línea divisoria entre profesores
+        pdf.setStrokeColor(colors.lightgrey)
+        pdf.setLineWidth(0.5)
+        pdf.line(40, y, width - 40, y)
         y -= 20
-        pdf.drawString(100, y, f"Rol: {profesor.role}")
-        y -= 20
-        pdf.drawString(100, y, f"Status: {'Activo' if profesor.status else 'Inactivo'}")
-        y -= 40  # Espacio adicional entre profesores
 
     # Finalizar el PDF
     pdf.showPage()

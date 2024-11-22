@@ -63,6 +63,8 @@ def login_view(request):
         user = authenticate(request, cedula=cedula, password=password)
         if user is not None:
             request.session['user_cedula'] = user.cedula
+            request.session['user_id'] = user.id
+            print(user.id)
             login(request, user)
             return redirect('user_dashboard')
         else:

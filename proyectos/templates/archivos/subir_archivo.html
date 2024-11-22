@@ -9,4 +9,11 @@
         <button type="submit" class="btn btn-primary">Subir</button>
     </form>
 </div>
+<!-- Botón para Volver -->
+<button class="btn btn-secondary" onclick="history.back()">Volver</button>
+{% if messages %}
+    {% for message in messages %}
+        <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+    {% endfor %}
+{% endif %}
 {% endblock %}

@@ -21,11 +21,14 @@
                 <td><a href="{{ archivo.Capitulos.url }}">Descargar Capítulos</a></td>
                 <td>{{ archivo.Grupo_est_id }}</td>
                 <td>
-                    <a href="{% url 'editar_archivo' archivo.id %}" class="btn btn-warning btn-sm">Editar</a>
-                    <form action="{% url 'eliminar_archivo' archivo.id %}" method="POST" style="display:inline-block;">
-                        {% csrf_token %}
-                        <button type="submit" class="btn btn-danger btn-sm">Eliminar</button>
-                    </form>
+                    {% if user_id in grupo.get_estudiantes %}
+                        {% if archivo.Grupo_est_id == grupo.id %}
+                            <a href="{% url 'actualizar_archivo' archivo.id %}" class="btn btn-warning btn-sm">Actualizar</a>
+                            <a href="{% url 'eliminar_archivo' archivo.id %}" class="btn btn-danger btn-sm">Eliminar</a>
+                        {% endif %}
+                    {% else %}
+                        Ver solo archivos
+                    {% endif %}
                 </td>
             </tr>
             {% empty %}
@@ -35,5 +38,12 @@
             {% endfor %}
         </tbody>
     </table>
+    <!-- Botón para Volver -->
+    <button class="btn btn-secondary" onclick="history.back()">Volver</button>
+    {% if messages %}
+    {% for message in messages %}
+        <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+    {% endfor %}
+{% endif %}
 </div>
 {% endblock %}

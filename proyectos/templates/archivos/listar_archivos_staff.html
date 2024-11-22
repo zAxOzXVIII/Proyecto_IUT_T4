@@ -1,0 +1,103 @@
+{% extends 'base.html' %}
+{% block title %}Listar Archivos{% endblock %}
+{% block content %}
+<div class="container mt-5">
+    <h1 class="text-center mb-4">Archivos Subidos</h1>
+
+    <!-- Tabla estilizada -->
+    <div class="table-responsive">
+        <table class="table table-bordered table-hover align-middle">
+            <thead class="table-dark text-center">
+                <tr>
+                    <th>ID</th>
+                    <th>Proyecto</th>
+                    <th>Capítulos</th>
+                    <th>Grupo</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for archivo in archivos %}
+                <tr>
+                    <td class="text-center">{{ archivo.id }}</td>
+                    <td>
+                        <a href="{{ archivo.Proyecto.url }}" class="btn btn-primary btn-sm">
+                            Descargar Proyecto
+                        </a>
+                    </td>
+                    <td>
+                        <a href="{{ archivo.Capitulos.url }}" class="btn btn-success btn-sm">
+                            Descargar Capítulos
+                        </a>
+                    </td>
+                    <td>
+                        <!-- Grupo -->
+                        <div class="accordion" id="accordionGrupos{{ archivo.id }}">
+                            <div class="accordion-item">
+                                <h2 class="accordion-header" id="headingGrupo{{ archivo.id }}">
+                                    <button class="accordion-button collapsed" type="button" 
+                                            data-bs-toggle="collapse" 
+                                            data-bs-target="#collapseGrupo{{ archivo.id }}" 
+                                            aria-expanded="false" 
+                                            aria-controls="collapseGrupo{{ archivo.id }}">
+                                        Ver Grupos
+                                    </button>
+                                </h2>
+                                <div id="collapseGrupo{{ archivo.id }}" 
+                                     class="accordion-collapse collapse" 
+                                     aria-labelledby="headingGrupo{{ archivo.id }}" 
+                                     data-bs-parent="#accordionGrupos{{ archivo.id }}">
+                                    <div class="accordion-body">
+                                        <ul class="list-group">
+                                            {% for grupo in grupos %}
+                                                <li class="list-group-item">
+                                                    <strong>ID Grupo:</strong> {{ grupo.id_grupo }}
+                                                    <ul class="mt-2">
+                                                        {% for estudiante in grupo.estudiantes %}
+                                                        <li>
+                                                            {{ estudiante.nombre }} - {{ estudiante.cedula }}
+                                                        </li>
+                                                        {% endfor %}
+                                                    </ul>
+                                                </li>
+                                            {% endfor %}
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="text-center">
+                        <a href="{% url 'editar_archivo' archivo.id %}" 
+                           class="btn btn-warning btn-sm">
+                            Editar
+                        </a>
+                        <form action="{% url 'eliminar_archivo' archivo.id %}" 
+                              method="POST" 
+                              class="d-inline">
+                            {% csrf_token %}
+                            <button type="submit" 
+                                    class="btn btn-danger btn-sm"
+                                    onclick="return confirm('¿Estás seguro de eliminar este archivo?');">
+                                Eliminar
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" class="text-center text-muted">
+                        No hay archivos subidos.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <div class="col-md-4 text-center">
+        <a href="{% url 'staff_dashboard' %}" class="btn btn-outline-dark btn-lg">
+            Volver
+        </a>
+    </div>
+</div>
+{% endblock %}
