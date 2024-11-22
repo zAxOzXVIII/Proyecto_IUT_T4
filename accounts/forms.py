@@ -46,11 +46,11 @@ class CustomUserCreationForm(UserCreationForm):
         cedula = self.cleaned_data.get('cedula')
 
         # Verifica si la CI existe en la lista de estudiantes
-        if not Estudiante.objects.filter(cedula=cedula).exists():
+        if not Estudiante.objects.filter(cedula=cedula)():
             raise ValidationError('Error al verificar la cédula: no encontrada.')
 
         # Verifica si la CI ya fue registrada en algún usuario de CustomUser
-        if CustomUser.objects.filter(cedula=cedula).exists():
+        if CustomUser.objects.filter(cedula=cedula)():
             raise ValidationError('Error al verificar la cédula: ya registrada.')
 
         return cedula
