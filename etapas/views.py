@@ -54,3 +54,4 @@ def gestionar_etapa(request, grupo_id):
         form = ModificarEtapaForm(instance=etapa)
 
     return render(request, 'gestionar_etapa.html', {'grupo': grupo, 'etapa': etapa, 'form': form})
+
