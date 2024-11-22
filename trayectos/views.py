@@ -1,11 +1,14 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from accounts.models import Estudiante
-from trayectos.models import Trayecto1, Trayecto2, Trayecto3, Trayecto4, Trayectos_all
+from trayectos.models import Trayectos_all
 from django.contrib import messages
 from .forms import AsignarEstudiantesForm
 from django.http import HttpResponse
 from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
+from reportlab.lib.utils import ImageReader
+import os
+from django.conf import settings
 
 def trayectos_main(request):
     if request.method == "GET":
@@ -120,24 +123,40 @@ def generar_pdf_trayecto1(request):
     width, height = letter
     pdf.setTitle("Listado de Estudiantes por Trayecto")
 
-    # Margen superior
-    y = height - 50
+    # Configurar márgenes
+    margen_x = 50
+    margen_y = 50
+    contenido_ancho = width - 2 * margen_x
+    contenido_alto = height - 2 * margen_y
+
+    # Añadir una imagen de encabezado
+    imagen_ruta = os.path.join(settings.BASE_DIR, 'static', 'images', 'logo_iut_largo.jpg')  # Cambia esta ruta por la de tu imagen
+    imagen_ancho = 500  # Ajusta el ancho según sea necesario
+    imagen_alto = 50  # Ajusta el alto según sea necesario
+    pdf.drawImage(ImageReader(imagen_ruta), margen_x, height - margen_y - imagen_alto, width=imagen_ancho, height=imagen_alto)
+
+    # Margen superior ajustado para el contenido
+    y = height - margen_y - imagen_alto - 20
 
     # Función para escribir el título de cada trayecto
     def escribir_trayecto(titulo, y_pos):
         pdf.setFont("Helvetica-Bold", 14)
-        pdf.drawString(100, y_pos, titulo)
+        pdf.drawString(margen_x, y_pos, titulo)
         pdf.setFont("Helvetica", 12)
         return y_pos - 20
 
     # Función para escribir los datos de los estudiantes
     def escribir_estudiante(y_pos, estudiante):
-        pdf.drawString(100, y_pos, f"Cédula: {estudiante.ci_est}, Nombre: {estudiante.name_est}, Sección: {estudiante.seccion}")
+        pdf.drawString(margen_x, y_pos, f"Cédula: {estudiante.ci_est}, Nombre: {estudiante.name_est}, Sección: {estudiante.seccion}")
         return y_pos - 20
 
     # Escribir datos de Trayecto 1
     y = escribir_trayecto("Trayecto 1", y)
     for estudiante in Trayectos_all.objects.filter(trayecto_año=1):
+        # Comprobar si hay espacio suficiente en la página
+        if y < margen_y:
+            pdf.showPage()
+            y = height - margen_y
         y = escribir_estudiante(y, estudiante)
 
     # Finalizar el PDF
@@ -156,24 +175,43 @@ def generar_pdf_trayecto2(request):
     width, height = letter
     pdf.setTitle("Listado de Estudiantes por Trayecto")
 
-    # Margen superior
-    y = height - 50
+    # Configurar márgenes
+    margen_x = 50
+    margen_y = 50
+    contenido_ancho = width - 2 * margen_x
+    contenido_alto = height - 2 * margen_y
+
+    # Añadir una imagen de encabezado
+    imagen_ruta = os.path.join(settings.BASE_DIR, 'static', 'images', 'logo_iut_largo.jpg')  # Cambia esta ruta por la de tu imagen
+    imagen_ancho = 500  # Ajusta el ancho según sea necesario
+    imagen_alto = 50  # Ajusta el alto según sea necesario
+    pdf.drawImage(ImageReader(imagen_ruta), margen_x, height - margen_y - imagen_alto, width=imagen_ancho, height=imagen_alto)
+
+    # Margen superior ajustado para el contenido
+    y = height - margen_y - imagen_alto - 20
 
     # Función para escribir el título de cada trayecto
     def escribir_trayecto(titulo, y_pos):
         pdf.setFont("Helvetica-Bold", 14)
-        pdf.drawString(100, y_pos, titulo)
+        pdf.drawString(margen_x, y_pos, titulo)
         pdf.setFont("Helvetica", 12)
         return y_pos - 20
 
     # Función para escribir los datos de los estudiantes
     def escribir_estudiante(y_pos, estudiante):
-        pdf.drawString(100, y_pos, f"Cédula: {estudiante.ci_est}, Nombre: {estudiante.name_est}, Sección: {estudiante.seccion}")
+        pdf.drawString(margen_x, y_pos, f"Cédula: {estudiante.ci_est}, Nombre: {estudiante.name_est}, Sección: {estudiante.seccion}")
         return y_pos - 20
 
     # Escribir datos de Trayecto 2
     y = escribir_trayecto("Trayecto 2", y)
     for estudiante in Trayectos_all.objects.filter(trayecto_año=2):
+        # Comprobar si hay espacio suficiente en la página
+        if y < margen_y:
+            pdf.showPage()
+            # Redibujar encabezado e imagen en la nueva página
+            pdf.drawImage(ImageReader(imagen_ruta), margen_x, height - margen_y - imagen_alto, width=imagen_ancho, height=imagen_alto)
+            y = height - margen_y - imagen_alto - 20
+            y = escribir_trayecto("Trayecto 2", y)
         y = escribir_estudiante(y, estudiante)
 
     # Finalizar el PDF
@@ -185,31 +223,50 @@ def generar_pdf_trayecto2(request):
 def generar_pdf_trayecto3(request):
     # Crear un objeto HttpResponse con el tipo de contenido adecuado para PDF
     response = HttpResponse(content_type='application/pdf')
-    response['Content-Disposition'] = 'attachment; filename="trayectos.pdf"'
+    response['Content-Disposition'] = 'attachment; filename="trayectos_trayecto3.pdf"'
 
     # Crear el objeto Canvas
     pdf = canvas.Canvas(response, pagesize=letter)
     width, height = letter
     pdf.setTitle("Listado de Estudiantes por Trayecto")
 
-    # Margen superior
-    y = height - 50
+    # Configurar márgenes
+    margen_x = 50
+    margen_y = 50
+    contenido_ancho = width - 2 * margen_x
+    contenido_alto = height - 2 * margen_y
+
+    # Añadir una imagen de encabezado
+    imagen_ruta = os.path.join(settings.BASE_DIR, 'static', 'images', 'logo_iut_largo.jpg')  # Cambia esta ruta por la de tu imagen
+    imagen_ancho = 500  # Ajusta el ancho según sea necesario
+    imagen_alto = 50  # Ajusta el alto según sea necesario
+    pdf.drawImage(ImageReader(imagen_ruta), margen_x, height - margen_y - imagen_alto, width=imagen_ancho, height=imagen_alto)
+
+    # Margen superior ajustado para el contenido
+    y = height - margen_y - imagen_alto - 20
 
     # Función para escribir el título de cada trayecto
     def escribir_trayecto(titulo, y_pos):
         pdf.setFont("Helvetica-Bold", 14)
-        pdf.drawString(100, y_pos, titulo)
+        pdf.drawString(margen_x, y_pos, titulo)
         pdf.setFont("Helvetica", 12)
         return y_pos - 20
 
     # Función para escribir los datos de los estudiantes
     def escribir_estudiante(y_pos, estudiante):
-        pdf.drawString(100, y_pos, f"Cédula: {estudiante.ci_est}, Nombre: {estudiante.name_est}, Sección: {estudiante.seccion}")
+        pdf.drawString(margen_x, y_pos, f"Cédula: {estudiante.ci_est}, Nombre: {estudiante.name_est}, Sección: {estudiante.seccion}")
         return y_pos - 20
-    
+
     # Escribir datos de Trayecto 3
     y = escribir_trayecto("Trayecto 3", y)
     for estudiante in Trayectos_all.objects.filter(trayecto_año=3):
+        # Comprobar si hay espacio suficiente en la página
+        if y < margen_y:
+            pdf.showPage()
+            # Redibujar encabezado e imagen en la nueva página
+            pdf.drawImage(ImageReader(imagen_ruta), margen_x, height - margen_y - imagen_alto, width=imagen_ancho, height=imagen_alto)
+            y = height - margen_y - imagen_alto - 20
+            y = escribir_trayecto("Trayecto 3", y)
         y = escribir_estudiante(y, estudiante)
 
     # Finalizar el PDF
