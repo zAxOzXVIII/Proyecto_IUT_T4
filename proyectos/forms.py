@@ -6,6 +6,15 @@ class ArchivoEstudianteForm(forms.ModelForm):
         model = ArchivosEstudiantes
         fields = ['Proyecto', 'Capitulos', 'Grupo_est_id']
 
+    def __init__(self, *args, grupos_disponibles=None, **kwargs):
+        super().__init__(*args, **kwargs)
+        if grupos_disponibles:
+            self.fields['Grupo_est_id'] = forms.ChoiceField(
+                choices=[(grupo.id, f"Grupo {grupo.id}") for grupo in grupos_disponibles],
+                label="Selecciona tu grupo",
+                widget=forms.Select(attrs={'class': 'form-select'})
+            )
+
     def clean_Proyecto(self):
         proyecto = self.cleaned_data.get('Proyecto')
         if not proyecto.name.endswith('.rar'):

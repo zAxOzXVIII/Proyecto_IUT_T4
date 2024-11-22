@@ -11,47 +11,31 @@ def proyectos_home(request):
 
 def subir_archivo(request):
     user_id = request.session.get('user_id')  # ID del estudiante logueado
-    print(user_id)
-# Obtener todos los grupos
-    grupos = Grupos.objects.all()
+    if not user_id:
+        messages.error(request, "No estás autenticado.")
+        return redirect('login')
 
-# Validar si el ID del usuario está en el listado de estudiantes de algún grupo
-    grupo_usuario = None
-    for grupo in grupos:
-        estudiantes_ids = grupo.get_estudiantes()  # Devuelve la lista de IDs de estudiantes como ['1', '2', '3', '4']
-        if str(user_id) in estudiantes_ids:
-            grupo_usuario = grupo
-            break
+    grupos = Grupos.objects.all()  # Obtener todos los grupos
 
-    if grupo_usuario:
-        print(f"El usuario pertenece al grupo: {grupo_usuario}")
-    else:
-        print("El usuario no pertenece a ningún grupo.")
+    # Filtrar grupos a los que pertenece el estudiante
+    grupos_usuario = [
+        grupo for grupo in grupos if str(user_id) in grupo.get_estudiantes()
+    ]
 
-    if not grupo:
+    if not grupos_usuario:
         messages.error(request, "No estás asociado a ningún grupo.")
         return redirect('listar_archivos')
 
-    archivo_existente = ArchivosEstudiantes.objects.filter(Grupo_est_id=grupo.id).first()
-
-    if archivo_existente:
-        # Si ya hay un archivo subido en el grupo, validar si fue subido por el usuario actual
-        if str(user_id) in grupo.get_estudiantes() and archivo_existente.Grupo_est_id == grupo.id:
-            messages.error(request, "Ya subiste un archivo. Solo puedes actualizarlo o eliminarlo.")
-            return redirect('listar_archivos')
-
     if request.method == 'POST':
-        form = ArchivoEstudianteForm(request.POST, request.FILES)
+        form = ArchivoEstudianteForm(request.POST, request.FILES, grupos_disponibles=grupos_usuario)
         if form.is_valid():
             archivo = form.save(commit=False)
-            archivo.Grupo_est_id = grupo.id  # Asignar el grupo al archivo
-            if grupo_usuario:
-                print(grupo.id)
-                messages.success(request, "Archivo subido exitosamente.")
-            else: messages.success(request, "No esta en ningun grupo")
+            archivo.Grupo_est_id = form.cleaned_data['Grupo_est_id']  # Asignar grupo seleccionado
+            archivo.save()
+            messages.success(request, "Archivo subido exitosamente.")
             return redirect('listar_archivos')
     else:
-        form = ArchivoEstudianteForm()
+        form = ArchivoEstudianteForm(grupos_disponibles=grupos_usuario)
 
     return render(request, 'archivos/subir_archivo.html', {'form': form})
 

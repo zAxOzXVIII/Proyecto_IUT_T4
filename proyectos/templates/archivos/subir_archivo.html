@@ -2,18 +2,39 @@
 {% block title %}Subir Archivo{% endblock %}
 {% block content %}
 <div class="container mt-5">
-    <h1>Subir Archivo</h1>
-    <form method="POST" enctype="multipart/form-data">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit" class="btn btn-primary">Subir</button>
-    </form>
+    <!-- Título -->
+    <h1 class="text-center text-primary mb-4">
+        <i class="bi bi-cloud-upload"></i> Subir Archivo
+    </h1>
+
+    <!-- Tarjeta para el formulario -->
+    <div class="card shadow-lg mx-auto" style="max-width: 600px;">
+        <div class="card-body bg-light">
+            <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <div class="d-flex justify-content-between mt-3">
+                    <button type="submit" class="btn btn-success">
+                        <i class="bi bi-upload"></i> Subir
+                    </button>
+                    <button type="button" class="btn btn-secondary" onclick="history.back()">
+                        <i class="bi bi-arrow-left-circle"></i> Volver
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Mensajes -->
+    {% if messages %}
+    <div class="mt-4">
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
 </div>
-<!-- Botón para Volver -->
-<button class="btn btn-secondary" onclick="history.back()">Volver</button>
-{% if messages %}
-    {% for message in messages %}
-        <div class="alert alert-{{ message.tags }}">{{ message }}</div>
-    {% endfor %}
-{% endif %}
 {% endblock %}
