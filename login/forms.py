@@ -11,21 +11,21 @@ class StaffForm(forms.ModelForm):
     # Validación para el campo cédula
     def clean_cedula(self):
         cedula = self.cleaned_data.get('cedula')
-        if Staff.objects.filter(cedula=cedula).exists():
+        if Staff.objects.filter(cedula=cedula):
             raise ValidationError('La cédula ya está registrada en el sistema.')
         return cedula
 
     # Validación para el campo correo
     def clean_correo(self):
         correo = self.cleaned_data.get('correo')
-        if Staff.objects.filter(correo=correo).exists():
+        if Staff.objects.filter(correo=correo):
             raise ValidationError('El correo electrónico ya está registrado en el sistema.')
         return correo
 
     # Validación para el campo user
     def clean_user(self):
         user = self.cleaned_data.get('user')
-        if Staff.objects.filter(user=user).exists():
+        if Staff.objects.filter(user=user):
             raise ValidationError('El nombre de usuario ya está registrado en el sistema.')
         return user
 
