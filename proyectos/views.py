@@ -26,6 +26,12 @@ def subir_archivo(request):
         messages.error(request, "No estás asociado a ningún grupo.")
         return redirect('listar_archivos')
 
+    # Verificar si el estudiante ya subió un archivo para alguno de sus grupos
+    archivos_existentes = ArchivosEstudiantes.objects.filter(Grupo_est_id__in=[grupo.id for grupo in grupos_usuario])
+    if archivos_existentes:
+        messages.error(request, "Ya has subido un archivo para tu grupo.")
+        return redirect('listar_archivos')
+
     if request.method == 'POST':
         form = ArchivoEstudianteForm(request.POST, request.FILES, grupos_disponibles=grupos_usuario)
         if form.is_valid():
@@ -39,6 +45,7 @@ def subir_archivo(request):
 
     return render(request, 'archivos/subir_archivo.html', {'form': form})
 
+
 def listar_archivos(request):
     user_id = request.session.get('user_id')
     grupo = Grupos.objects.filter(estudiantes__icontains=str(user_id)).first()
@@ -50,33 +57,33 @@ def listar_archivos_all(request):
     # Obtener todos los archivos
     archivos = ArchivosEstudiantes.objects.all()
 
-    # Crear un diccionario para almacenar los estudiantes relacionados con cada grupo
-    estudiantes_info = []
+    # Diccionario para mapear los grupos con estudiantes
+    archivos_con_grupos = []
 
-    # Iterar sobre los grupos y obtener los estudiantes
-    grupos = Grupos.objects.all()
-    for grupo in grupos:
-        if grupo.estudiantes:  # Si el grupo tiene estudiantes asignados
-            # Separar los IDs y convertirlos en una lista
+    for archivo in archivos:
+        # Obtener el grupo relacionado por el campo Grupo_est_id
+        grupo = Grupos.objects.filter(id=archivo.Grupo_est_id).first()
+
+        if grupo and grupo.estudiantes:  # Si el grupo existe y tiene estudiantes
             estudiantes_ids = [int(id.strip()) for id in grupo.estudiantes.split(',') if id.strip().isdigit()]
-            
-            # Obtener los estudiantes de la base de datos
             estudiantes = Estudiante.objects.filter(id__in=estudiantes_ids)
 
-            # Agregar la información al diccionario con el ID del grupo
-            estudiantes_info.append({
-                'id_grupo': grupo.id,
-                'estudiantes': [
-                    {'nombre': estudiante.nombre, 'cedula': estudiante.cedula}
-                    for estudiante in estudiantes
-                ]
+            # Agregar el archivo con su grupo y estudiantes al contexto
+            archivos_con_grupos.append({
+                'archivo': archivo,
+                'grupo': {
+                    'id_grupo': grupo.id,
+                    'estudiantes': [
+                        {'nombre': estudiante.nombre, 'cedula': estudiante.cedula}
+                        for estudiante in estudiantes
+                    ]
+                }
             })
 
-    # Pasar los datos al contexto
     return render(request, 'archivos/listar_archivos_staff.html', {
-        'archivos': archivos,
-        'grupos': estudiantes_info
+        'archivos_con_grupos': archivos_con_grupos,
     })
+
 
 def editar_archivo(request, archivo_id):
     archivo = get_object_or_404(ArchivosEstudiantes, id=archivo_id)

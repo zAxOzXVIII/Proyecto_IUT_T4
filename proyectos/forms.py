@@ -10,7 +10,10 @@ class ArchivoEstudianteForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         if grupos_disponibles:
             self.fields['Grupo_est_id'] = forms.ChoiceField(
-                choices=[(grupo.id, f"Grupo {grupo.id}") for grupo in grupos_disponibles],
+                choices=[
+                    (grupo.id, f"Grupo {grupo.id} - Trayecto {grupo.trayecto_cursante}") 
+                    for grupo in grupos_disponibles
+                ],
                 label="Selecciona tu grupo",
                 widget=forms.Select(attrs={'class': 'form-select'})
             )

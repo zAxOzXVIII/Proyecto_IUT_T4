@@ -41,6 +41,7 @@ def trayectos_view(request):
         if trayectos == "4":
             estudiantes = Trayectos_all.objects.filter(trayecto_año="4")
             print(estudiantes)
+        print(request.session["staff_role"])
         return render(request, "trayectos_view.html", {"estudiantes": estudiantes, "seccion": seccion, "trayecto": tray, "roles":request.session["staff_role"]})
 
 def asignar_estudiantes(request):
@@ -52,7 +53,8 @@ def asignar_estudiantes(request):
             nombres = estudiantes.values('nombre')
             seccion = form.cleaned_data['seccion']
             trayectos = request.POST.get('trayecto')
-
+            
+            
             if trayectos == "":
                 messages.success(request, "debe seleccionar un trayecto")
                 return redirect('asignar_estudiantes')
