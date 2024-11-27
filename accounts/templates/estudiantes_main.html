@@ -69,8 +69,9 @@
                             <td class="text-center">
                                 <a class="btn btn-primary btn-sm" href="{% url 'editar_estudiante' estudiante.id %}">Editar</a>
                                 
+                                {% if roles != "secretaria" %}
                                 <a class="btn btn-danger btn-sm" href="{% url 'eliminar_estudiante' estudiante.id %}">Borrar</a>
-                                
+                                {% endif %}
                             </td>
                         </tr>
                         {% endif %}
@@ -83,12 +84,12 @@
 
 
     <!-- Mensajes -->
-    <div class="row justify-content-center">
+    <!-- <div class="row justify-content-center">
         <div class="col-lg-10 text-center">
             {% for message in messages %}
             <p>{{ message }}</p>
             {% endfor %}
         </div>
-    </div>
+    </div> -->
 </main>
 {% endblock %}
