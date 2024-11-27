@@ -29,7 +29,7 @@
 
     <!-- Botón de activar/desactivar estudiante -->
     <div class="text-center mt-4">
-        <div class="btn-group">
+        <div class="btn">
             {% if not estudiante.status %}
             <!-- Formulario para activar al estudiante -->
             <form action="{% url 'activar_estudiante' estudiante.id %}" method="POST">
@@ -37,7 +37,7 @@
                 <button class="btn btn-danger" type="submit">Activar</button>
             </form>
             {% endif %}
-
+            <br>
             <!-- Botón de regresar -->
             {% if estudiante.status %}
             <a href="{% url 'estudiantes_main' %}" class="btn btn-secondary">Regresar</a>

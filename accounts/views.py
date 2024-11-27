@@ -75,6 +75,7 @@ def activar_estudiante(request, id):
         #print(estudiante.nombre)
         estudiante.status = True
         estudiante.save()
+        
         messages.success(request, 'Estudiante activado exitosamente.')
         return redirect('estudiantes_main')
 ###
@@ -82,6 +83,7 @@ def activar_estudiante(request, id):
 def eliminar_estudiante(request, id):
     if request.method == "GET":
         estudiante = get_object_or_404(Estudiante, pk=id)
+        print(estudiante)
         return render(request, 'eliminar_estudiante.html', {"estudiante": estudiante})
     elif request.method == "POST":
         # Obtener al estudiante
@@ -100,8 +102,17 @@ def eliminar_estudiante(request, id):
             grupo.save()
 
         # Eliminar el registro de trayectos del estudiante
+        try:
+            last_year = Trayectos_all.objects.get(ref_cedula_id=estudiante.id).trayecto_año
+            estudiante.ultimo_año_cursado = last_year
+            estudiante.save()
+        except:
+            print("estudiante no estaba en trayectos")
         Trayectos_all.objects.filter(ref_cedula_id=estudiante.id).delete()
-
+        
+        #print(last_year)
+        
+        
         # Mensaje de éxito y redirección
         messages.success(request, 'Estudiante eliminado exitosamente.')
         return redirect('estudiantes_main')

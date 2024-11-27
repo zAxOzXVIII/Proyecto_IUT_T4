@@ -13,6 +13,38 @@
             </div>
         </div>
     </div>
+    <br>
+
+    
+
+    <!-- Descargar PDF -->
+    <div class="row justify-content-center mt-4">
+        <div class="btn btn-group col-lg-4">
+            <a href="{% url 'buscar_estudiante_ci' %}" class="btn btn-primary mt-3 mx-2">Buscar estudiante por cedula</a>
+            <a href="{% url 'generar_pdf_estudiantes' %}" class="btn btn-success mt-3 mx-2">Descargar PDF de Estudiantes</a>
+        </div>
+    </div>
+    <br>
+    <!-- Estudiantes eliminados -->
+    {% if estudiantes_eliminados %}
+    <div class="row mb-3 justify-content-center">
+        <div class="col-lg-10 text-center">
+            <a class="btn btn-secondary btn-formulario col-sm-12 col-md-8 col-lg-4" href="{% url 'estudiantes_eliminados' %}">
+                Ir a Estudiantes Eliminados
+            </a>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Botón de Volver -->
+    <div class="row justify-content-center">
+        <div class="col-lg-10 text-center">
+            <a href="{% url 'staff_dashboard' %}" class="btn btn-primary mt-3">Volver</a>
+        </div>
+    </div>
+
+    </div>
+    <br>
 
     <!-- Lista de estudiantes activos -->
     <div class="row justify-content-center">
@@ -49,35 +81,6 @@
         </div>
     </div>
 
-    <!-- Estudiantes eliminados -->
-    {% if estudiantes_eliminados %}
-    <div class="row mb-3 justify-content-center">
-        <div class="col-lg-10 text-center">
-            <a class="btn btn-primary btn-formulario col-sm-12 col-md-8 col-lg-4" href="{% url 'estudiantes_eliminados' %}">
-                Ir a Estudiantes Eliminados
-            </a>
-        </div>
-    </div>
-    {% endif %}
-
-    <!-- Botón de Volver -->
-    <div class="row justify-content-center">
-        <div class="col-lg-10 text-center">
-            <a href="{% url 'staff_dashboard' %}" class="btn btn-secondary mt-3">Volver</a>
-        </div>
-
-        <div class="col-lg-10 text-center">
-            <a href="{% url 'buscar_estudiante_ci' %}" class="btn btn-secondary mt-3">Buscar estudiante por cedula</a>
-        </div>
-    </div>
-
-    <!-- Descargar PDF -->
-    <div class="row justify-content-center mt-4">
-        <div class="col-lg-10 text-center">
-            <a href="{% url 'generar_pdf_estudiantes' %}" class="btn btn-primary">Descargar PDF de Estudiantes</a>
-        </div>
-    </div>
-    <br>
 
     <!-- Mensajes -->
     <div class="row justify-content-center">
