@@ -18,6 +18,7 @@ def profesores_view(request):
     profes = Profesores.objects.all()
     ### filtra si hay profesores con status False
     profes_eliminados = Profesores.objects.filter(status__in=[False, False, 0])
+    print(profes_eliminados)
     return render(request, 'profesores_main.html', {"profes": profes, "profes_eliminados":profes_eliminados, "roles":request.session["staff_role"]})
 
 def crear_profe(request):
@@ -73,6 +74,7 @@ def eliminar_profe(request, id):
         profe.save()
         messages.success(request, 'Profesor eliminado exitosamente.')
         return redirect('profesores')
+    
 
 
 def profesores_eliminados(request):

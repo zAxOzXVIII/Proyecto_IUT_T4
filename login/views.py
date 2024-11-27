@@ -73,7 +73,7 @@ def login_view(request):
 
 def logout_view(request):
     logout(request)
-    return redirect('login')
+    return redirect('home')
 
 # staff
 
@@ -109,7 +109,7 @@ def logout_staff(request):
         del request.session['staff_id']
         del request.session['staff_name']
         messages.success(request, 'Has cerrado sesión correctamente.')
-    return redirect('login_staff')
+    return redirect('home')
 
 @staff_required
 def staff_dashboard(request):

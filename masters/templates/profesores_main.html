@@ -17,7 +17,21 @@
                 <div class="row mb-3 d-flex justify-content-center">
                     <a class="btn btn-primary btn-formulario m-2 col-sm-12 col-md-5 col-lg-3" href="{% url 'crear_profe' %}">Añadir nuevo</a>
                     <a href="{% url 'generar_pdf_profesores' %}" class="btn btn-success btn-formulario m-2 col-sm-12 col-md-5 col-lg-3">Descargar PDF de Profesores</a>
+                
+                    {% if profes_eliminados %}
+                    <div class="row d-flex justify-content-center">
+                        <a class="btn btn-secondary btn-formulario m-2 col-sm-12 col-md-5 col-lg-3" href="{% url 'profesores_eliminados' %}">Ver Profesores Inactivos</a>
+                    </div>
+                    {% endif %}
+
+                    <div class="row d-flex justify-content-center mt-3">
+                        <a class="btn btn-primary btn-formulario m-2 col-sm-12 col-md-5 col-lg-3" href="{% url 'staff_dashboard' %}">Volver</a>
+                    </div>
+                
                 </div>
+                
+
+
 
                 <div class="table-responsive">
                     <table class="table table-striped table-hover table-sm table-bordered my-4">
@@ -30,6 +44,7 @@
                         </thead>
                         <tbody>
                             {% for prof in profes %}
+                                {% if prof.status == True %}
                                     <tr>
                                         <td class="text-center">{{ prof.nombre }}</td>
                                         <td class="text-center">{{ prof.cedula }}</td>
@@ -38,37 +53,26 @@
                                                 <i class="fa-solid fa-pencil text-primary btn" data-bs-toggle="tooltip" data-bs-placement="top" title="Editar Docente">Editar</i>
                                             </a>
                                             {% if roles != "secretaria" %}
-                                                | 
+                                                        
                                                 <a href="{% url 'eliminar_profe' prof.id %}">
                                                     <i class="fa-solid fa-trash text-primary btn" data-bs-toggle="tooltip" data-bs-placement="top" title="Borrar Docente">Borrar</i>
                                                 </a>
                                             {% endif %}
                                         </td>
                                     </tr>
+                                {% endif %}
                             {% endfor %}
                         </tbody>
                     </table>
                 </div>
 
-                {% if profes_eliminados %}
-                <div class="row d-flex justify-content-center">
-                    <a class="btn btn-secondary btn-formulario m-2 col-sm-12 col-md-5 col-lg-3" href="{% url 'profesores_eliminados' %}">Ver Profesores Inactivos</a>
-                </div>
-                {% endif %}
-
-                <div class="row d-flex justify-content-center mt-3">
-                    <a class="btn btn-primary btn-formulario m-2 col-sm-12 col-md-5 col-lg-3" href="{% url 'staff_dashboard' %}">Volver</a>
-                </div>
+               
 
             </div>
         </div>
     </div>
 </div>
 
-{% if error %}
-    <div class="alert alert-danger text-center" role="alert">
-        {{ error }}
-    </div>
-{% endif %}
+
 
 {% endblock %}

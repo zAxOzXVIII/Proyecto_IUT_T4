@@ -33,7 +33,7 @@
 <body class="d-flex flex-column min-vh-100"> <!-- Clase para sticky footer -->
   <!-- Navbar -->
   <div>
-    <img src="{% static 'images/header_sarec.jpg' %}" alt="Header Image" class="navbar-header-image">
+    <img src="{% static 'images/header_sarec.jpg' %}" alt="Header Image" class="navbar-header-image" style="  width: 100%; height: 58px;">
  </div>
  <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
     <div class="container-fluid">
@@ -51,24 +51,34 @@
         <!-- Enlaces del menú -->
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                {% if request.session.staff_id %}
                 <li class="nav-item">
-                    <a href="{% url 'home' %}" class="nav-link">
+                    <a href="{% url 'staff_dashboard' %}" class="nav-link">
                         <i class="bi bi-house-door"></i> Home
                     </a>
                 </li>
-                {% if request.session.staff_id %}
                     <li class="nav-item">
                         <a href="{% url 'logout_staff' %}" class="nav-link">
                             <i class="bi bi-box-arrow-right"></i> Logout Staff
                         </a>
                     </li>
                 {% elif user.is_authenticated %}
+                <li class="nav-item">
+                    <a href="{% url 'user_dashboard' %}" class="nav-link">
+                        <i class="bi bi-house-door"></i> Home
+                    </a>
+                </li>
                     <li class="nav-item">
                         <a href="{% url 'logout' %}" class="nav-link">
                             <i class="bi bi-box-arrow-right"></i> Logout Student
                         </a>
                     </li>
                 {% else %}
+                <li class="nav-item">
+                    <a href="{% url 'home' %}" class="nav-link">
+                        <i class="bi bi-house-door"></i> Home
+                    </a>
+                </li>
                     <li class="nav-item">
                         <a href="{% url 'login' %}" class="nav-link">
                             <i class="bi bi-box-arrow-in-right"></i> Login
@@ -109,22 +119,18 @@
             <!-- Enlaces Rápidos -->
             <div class="col-md-4 col-lg-4 col-xl-4 mx-auto mb-4">
                 <h5 class="text-uppercase font-weight-bold text-warning mb-3">Enlaces Rápidos</h5>
-                <ul class="list-unstyled">
-                    <li>
-                        <a href="https://uptaivirtualsarec.com/" class="text-light text-decoration-none d-flex align-items-center">
+                        <a href="https://uptaivirtualsarec.com/" class="text-light text-decoration-none d-flex justify-content-center">
                             <img src="{% static 'images/logo.png' %}" alt="Logo Sarec" width="40" class="me-2">
-                            Contacto Sarec
+                            Contacto SAREC
                         </a>
-                    </li>
-                </ul>
             </div>
 
             <!-- Autores -->
             <div class="col-md-4 col-lg-4 col-xl-4 mx-auto mb-4">
                 <h5 class="text-uppercase font-weight-bold text-warning mb-3">Autores</h5>
                 <ul class="list-unstyled">
+                    <li>Gutierrez H. Elio S.</li>
                     <li>Barrera Marde</li>
-                    <li>Gutierrez Elio</li>
                     <li>Diaz Adriana</li>
                     <li>Rincon Merhalyr</li>
                 </ul>

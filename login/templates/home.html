@@ -30,12 +30,12 @@
 }
 </style>
 <div class="container mt-5">
-    <h1 class="text-center mb-5">Welcome</h1>
+    <h1 class="text-center mb-5">Bienvenido al sistema de proyectos de INFORMATICA de la UPTAIET</h1>
     <div class="row text-center">
         <!-- Botón Login Staff -->
 <div class="col-md-4">
-    <div class="card-body mb-2">
-        <h5 class="card-title">Login Staff</h5>
+    <div class="card-body mb-2 d-flex">
+        <h5 class="card-title align-items-center">Sesión Administrativo</h5>
     </div>
     <div class="card shadow-sm grow-hover fixed-size-card">
         <a style="text-decoration: none;" href="{% url 'login_staff' %}">
@@ -45,8 +45,8 @@
     </div>
 </div>
 <div class="col-md-4">
-    <div class="card-body mb-2">
-        <h5 class="card-title">Sarec</h5>
+    <div class="card-body mb-2 d-flex">
+        <h5 class="card-title align-items-center">SAREC</h5>
     </div>
     <div class="card shadow-sm grow-hover fixed-size-card">
         <a style="text-decoration: none;" href="https://uptaivirtualsarec.com/">
@@ -59,7 +59,7 @@
 <!-- Botón Login Estudiante -->
 <div class="col-md-4">
     <div class="card-body mb-2">
-        <h5 class="card-title">Login Estudiante</h5>
+        <h5 class="card-title d-flex">Sesión estudiante</h5>
     </div>
     <div class="card shadow-sm grow-hover fixed-size-card">
         <a style="text-decoration: none;" href="{% url 'login' %}">
@@ -69,4 +69,5 @@
 </div>
     </div>
 </div>
+<br><br><br><br><br>
 {% endblock %}
