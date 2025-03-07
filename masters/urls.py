@@ -9,4 +9,6 @@ urlpatterns = [
     path('activar_profe/<int:id>/', views.activar_profe, name='activar_profe'),
     path('profesores/inactivos/', views.profesores_eliminados, name="profesores_eliminados"),
     path('generar_pdf_profesores/', views.generar_pdf_profesores, name='generar_pdf_profesores'),
+    path('profesores_view_all/', views.profesores_view_all, name='profesores_view_all'),
+    path('profesores_search/', views.profesores_search, name='profesores_search'),
 ]

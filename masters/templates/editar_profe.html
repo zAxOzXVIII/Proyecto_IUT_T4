@@ -41,7 +41,7 @@
     <!-- Botón de regresar -->
     <div class="text-center mt-4">
         {% if profe.status %}
-        <a href="{% url 'profesores' %}" class="btn btn-secondary">Regresar</a>
+        <a href="{% url 'profesores_view_all' %}" class="btn btn-secondary">Regresar</a>
         {% else %}
         <a href="{% url 'profesores_eliminados' %}" class="btn btn-secondary">Regresar</a>
         {% endif %}

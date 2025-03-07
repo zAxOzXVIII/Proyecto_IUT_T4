@@ -11,4 +11,5 @@ urlpatterns = [
     path('estudiantes/inactivos/', views.estudiantes_eliminados, name="estudiantes_eliminados"),
     path('generar_pdf_estudiantes/', views.generar_pdf_estudiantes, name='generar_pdf_estudiantes'),
     path('buscar_estudiante_ci/', views.buscar_estudiante, name='buscar_estudiante_ci'),
+    path('estudiantes_view_all/',views.estudiantes_view_all, name='estudiantes_ver_todos'),
 ]

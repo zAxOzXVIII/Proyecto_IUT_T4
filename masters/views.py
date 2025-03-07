@@ -3,7 +3,7 @@ from django.contrib import messages
 #from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from .models import Profesores
-from .forms import ProfesoresForm
+from .forms import ProfesoresForm, BuscarProfesorForm
 from django.http import HttpResponse
 from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
@@ -15,11 +15,29 @@ import os
 # Create your views here.
 
 def profesores_view(request):
+    return render(request, 'profesores_main.html')
+
+def profesores_view_all(request):
     profes = Profesores.objects.all()
     ### filtra si hay profesores con status False
     profes_eliminados = Profesores.objects.filter(status__in=[False, False, 0])
-    print(profes_eliminados)
-    return render(request, 'profesores_main.html', {"profes": profes, "profes_eliminados":profes_eliminados, "roles":request.session["staff_role"]})
+    #print(profes_eliminados)
+    return render(request, 'profesores_ver_todos.html', {"profes": profes, "profes_eliminados":profes_eliminados, "roles":request.session["staff_role"]})
+
+def profesores_search(request):
+        profesor = None
+        form = BuscarProfesorForm()
+        if request.method == 'POST':
+            form = BuscarProfesorForm(request.POST)
+            if form.is_valid():
+                cedula = form.cleaned_data['cedula']
+                try:
+                # Realiza la búsqueda de estudiante por cédula
+                    profesor = get_object_or_404(Profesores, cedula=cedula)
+                except Exception as e:
+                # Manejar cualquier otra excepción que pueda ocurrir
+                    messages.error(request, f'Ocurrió un error: No se encontró un estudiante con esa cédula.')
+        return render(request, 'buscar_profe.html', {'form': form, 'profesor': profesor})
 
 def crear_profe(request):
     if request.method == "GET":
@@ -30,7 +48,7 @@ def crear_profe(request):
             if form.is_valid():
                 profesor = form.save(commit=False)  # No guarda en la base aún
                 profesor.save()  # Guarda el registro en la base de datos
-                return redirect("profesores")
+                return redirect("profesores_view_all")
             else:
                 # Renderiza la misma página si el formulario no es válido
                 return render(request, 'crear_profe.html', {"form": form, "error": "Formulario inválido"})
@@ -62,7 +80,7 @@ def activar_profe(request,id):
         profe.status = True
         profe.save()
         messages.success(request, 'Profesor activado exitosamente.')
-        return redirect('profesores')
+        return redirect('profesores_view_all')
 
 def eliminar_profe(request, id):
     if request.method == "GET":
@@ -73,7 +91,7 @@ def eliminar_profe(request, id):
         profe.status = False
         profe.save()
         messages.success(request, 'Profesor eliminado exitosamente.')
-        return redirect('profesores')
+        return redirect('profesores_view_all')
     
 
 

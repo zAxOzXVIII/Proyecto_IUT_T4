@@ -1,10 +1,10 @@
 {% extends 'base.html' %}
-
+{%load static %}
 {% block content %}
 <div class="container-fluid">
     <div class="row mt-4 d-flex justify-content-center">
         <div class="col-lg-6 col-sm-6 col-md-6 header-formulario p-4 d-flex justify-content-center">
-            <h3 class="text-center mt-2 mx-4 p-2 bg-titulo-formulario">Buscar Estudiante por Cédula</h3>
+            <h3 class="text-center mt-2 mx-4 p-2 bg-titulo-formulario">Buscar Profesor por Cédula</h3>
         </div>
     </div>
 
@@ -31,45 +31,48 @@
                     </form>
 
                     <div class="row d-flex justify-content-center mt-3">
-                        <a class="btn btn-primary btn-formulario m-2 col-sm-12 col-md-5 col-lg-3" href="{% url 'estudiantes_main' %}">Volver</a>
+                        <a class="btn btn-primary btn-formulario m-2 col-sm-12 col-md-5 col-lg-3" href="{% url 'profesores' %}">Volver</a>
                     </div>
+
+
 
                 </div>
             </div>
 
-            {% if estudiante %}
+            <!--resultados de busqueda-->
+            {% if profesor %}
             <div class="row d-flex justify-content-center my-3">
                 <div class="col bg-white p-4 centro-formulario">
-                    <h2 class="text-center">Estudiante Encontrado</h2>
-                    
+                    <h2 class="text-center">Profesor Encontrado</h2>
+                    <div class="row my-3">
                     <table class="table table-striped table-hover table-sm table-bordered my-4">
                         <thead>
                             <tr>
                                 <th class="text-center">Nombre</th>
                                 <th class="text-center">Cédula</th>
-                                <th class="text-center">Estado</th>
                                 <th class="text-center">Acción</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            {% if estudiante.status == True %}
-                            <tr>
-                                <td class="text-center">{{ estudiante.nombre }}</td>
-                                <td class="text-center">{{ estudiante.cedula }}</td>
-                                <td class="text-center"><span class="badge bg-success">Activo 🟩</span></td>
-                                <td class="text-center">
-                                    <a class="btn btn-primary btn-sm" href="{% url 'editar_estudiante' estudiante.id %}">Editar</a>
-                                    
-                                    {% if roles != "secretaria" %}
-                                    <a class="btn btn-danger btn-sm" href="{% url 'eliminar_estudiante' estudiante.id %}">Borrar</a>
-                                    {% endif %}
-                                </td>
-                            </tr>
-                            {% endif %}
-                        </tbody>
+                    <tbody>
+                        <tr>
+                            <td class="text-center">{{ profesor.nombre }}</td>
+                            <td class="text-center">{{ profesor.cedula }}</td>
+                            <td class="text-center">
+                                <a href="{% url 'editar_profe' profesor.id %}">
+                                    <i class="fa-solid fa-pencil text-primary btn" data-bs-toggle="tooltip" data-bs-placement="top" title="Editar Docente">Editar</i>
+                                </a>
+                                {% if roles != "secretaria" %}
+
+                                    <a href="{% url 'eliminar_profe' profesor.id %}">
+                                        <i class="fa-solid fa-trash text-primary btn" data-bs-toggle="tooltip" data-bs-placement="top" title="Borrar Docente">Borrar</i>
+                                    </a>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    </tbody>
                     </table>
-
-
+                    </div>
+                    </div>
                 </div>
             </div>
             {% endif %}
@@ -85,10 +88,9 @@
                 {% endfor %}
             </ul>
 {% endif %}
+
         </div>
     </div>
 </div>
-
-
 
 {% endblock %}

@@ -46,9 +46,16 @@ def estudiantesApi(request, id=0):
 
 ########################FUNCIONES CRUD##############################
 def estudiantes_view(request):
+    return render(request, 'estudiantes_main.html')
+
+
+def estudiantes_view_all(request):
     estudiantes = Estudiante.objects.all()
     estudiantes_eliminados = Estudiante.objects.filter(status__in=[False, False, 0])
-    return render(request, 'estudiantes_main.html', {"estudiantes": estudiantes, "estudiantes_eliminados":estudiantes_eliminados, 'roles':request.session["staff_role"]})
+    return render(request, 'estudiantes_ver_todos.html', {"estudiantes": estudiantes, "estudiantes_eliminados":estudiantes_eliminados, 'roles':request.session["staff_role"]})
+
+
+
 
 def editar_estudiante(request, id):
     if request.method == "GET":
